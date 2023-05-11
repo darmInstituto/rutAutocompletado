@@ -21,6 +21,7 @@ namespace rutAutocompletado
         private void txtRut_KeyPress(object sender, KeyPressEventArgs e)
         {
             int seleccion = txtRut.SelectionStart;
+            label1.Text = "";
 
             if (!Char.IsControl(e.KeyChar))
             {
@@ -31,61 +32,12 @@ namespace rutAutocompletado
 
                     if (longitud >= 12)
                     {
-
-                    }
-                    else if (txtRut.TextLength > 0)
-                    {
-                        listRut.Clear();
-                        for (int i = 0; i < txtRut.Text.Length; i++)
-                        {
-                            listRut.Add(txtRut.Text[i]);
-                        }
-
-                        //MessageBox.Show(seleccion.ToString());
-
-                        listRut.Insert(seleccion, e.KeyChar);
-                        seleccion++;
-
-                        while (listRut.IndexOf('-') >= 0)
-                        {
-                            seleccion--;
-                            listRut.Remove('-');
-                        }
-                        while (listRut.IndexOf('.') >= 0)
-                        {
-                            seleccion--;
-                            listRut.Remove('.');
-                        }
-
-                        if (listRut.Count > 1)
-                        {
-                            seleccion++;
-                            listRut.Insert(listRut.Count - 1, '-');
-                        }
-
-                        if (listRut.Count > 5)
-                        {
-                            seleccion++;
-                            listRut.Insert(listRut.Count - 5, '.');
-                        }
-
-                        if (listRut.Count > 9)
-                        {
-                            seleccion++;
-                            listRut.Insert(listRut.Count - 9, '.');
-                        }
-
-                        txtRut.Text = String.Join("", listRut.ToArray());
-                        txtRut.SelectionStart = seleccion;
+                        label1.Text = "Espacio completo";
                     }
                     else
                     {
-                        listRut.Insert(seleccion, e.KeyChar);
-                        txtRut.Text = String.Join("", listRut.ToArray());
-                        txtRut.SelectionStart = txtRut.TextLength;
-                    }
-
-
+                        insertarCaracter(seleccion, e.KeyChar);
+                    }                   
                 }
                 else
                 {
@@ -96,51 +48,106 @@ namespace rutAutocompletado
 
         }
 
-        private void txtRut_KeyUp(object sender, KeyEventArgs e)
+        void insertarCaracter(int seleccion, char caracter)
         {
-            int seleccion = txtRut.SelectionStart;
+            listRut.Clear();
+            for (int i = 0; i < txtRut.Text.Length; i++)
+            {
+                listRut.Add(txtRut.Text[i]);
+            }
 
+            //MessageBox.Show(seleccion.ToString());
+
+            listRut.Insert(seleccion, caracter);
+            seleccion++;
+
+            while (listRut.IndexOf('-') >= 0)
+            {
+                seleccion--;
+                listRut.Remove('-');
+            }
+            while (listRut.IndexOf('.') >= 0)
+            {
+                seleccion--;
+                listRut.Remove('.');
+            }
+
+            if (listRut.Count > 1)
+            {
+                seleccion++;
+                listRut.Insert(listRut.Count - 1, '-');
+            }
+
+            if (listRut.Count > 5)
+            {
+                seleccion++;
+                listRut.Insert(listRut.Count - 5, '.');
+            }
+
+            if (listRut.Count > 9)
+            {
+                seleccion++;
+                listRut.Insert(listRut.Count - 9, '.');
+            }
+
+            txtRut.Text = String.Join("", listRut.ToArray());
+            txtRut.SelectionStart = seleccion;
+        }
+
+        private void txtRut_KeyUp(object sender, KeyEventArgs e)
+        {         
+            int seleccion = txtRut.SelectionStart;
             if (e.KeyValue == 8 || e.KeyValue == 46)
             {
+                label1.Text = "";
                 listRut.Clear();
                 if (txtRut.TextLength > 0)
                 {
-                    for (int i = 0; i < txtRut.Text.Length; i++)
-                    {
-                        if (Char.IsNumber(txtRut.Text[i]) || txtRut.Text[i] == 'k' || txtRut.Text[i] == 'K')
-                        {
-                            listRut.Add(txtRut.Text[i]);
-                        }
-                        else
-                        {
-                            seleccion--;
-                        }
-                    }
-
-                    if (listRut.Count > 1)
-                    {
-                        listRut.Insert(listRut.Count - 1, '-');
-                        seleccion++;
-                    }
-
-                    if (listRut.Count > 5)
-                    {
-                        listRut.Insert(listRut.Count - 5, '.');
-                        seleccion++;
-                    }
-
-                    if (listRut.Count > 9)
-                    {
-                        listRut.Insert(listRut.Count - 9, '.');
-                        seleccion++;
-                    }
-
-                    txtRut.Text = String.Join("", listRut.ToArray());
-                    txtRut.SelectionStart = seleccion;
-
+                    eliminarCaracter(seleccion);
                 }
             }
         }
+
+        void eliminarCaracter(int seleccion)
+        {
+            for (int i = 0; i < txtRut.Text.Length; i++)
+            {
+                if (Char.IsNumber(txtRut.Text[i]) || txtRut.Text[i] == 'k' || txtRut.Text[i] == 'K')
+                {
+                    listRut.Add(txtRut.Text[i]);
+                }
+                else
+                {
+                    seleccion--;
+                }
+            }
+
+            if (listRut.Count > 1)
+            {
+                listRut.Insert(listRut.Count - 1, '-');
+                seleccion++;
+            }
+
+            if (listRut.Count > 5)
+            {
+                listRut.Insert(listRut.Count - 5, '.');
+                seleccion++;
+            }
+
+            if (listRut.Count > 9)
+            {
+                listRut.Insert(listRut.Count - 9, '.');
+                seleccion++;
+            }
+
+            txtRut.Text = String.Join("", listRut.ToArray());
+            while (seleccion <= -1)
+            {
+                seleccion++;
+            }
+            txtRut.SelectionStart = seleccion;
+        }
+
 
         bool validarRut(string rut)
         {
